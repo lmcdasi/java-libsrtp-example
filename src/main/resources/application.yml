@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+application:
+  debug-srtp: false
+  file-path: "/mnt/c/tmp/"
+  ip-address: "localhost"
+  rtp-selector-timeout-ms: 20ms
+  use-builtin-native: false
+  use-jna: true
+  use-jni: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: production
+  main:
+    banner-mode: "off"

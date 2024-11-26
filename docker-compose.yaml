@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  demo-connector:
+    image: demo:0.0.1-SNAPSHOT
+    container_name: demo-connector
+    environment:
+      application_srtpDebug: "true"
+      JAVA_OPTIONS: "--enable-preview --enable-native-access=ALL-UNNAMED -agentlib:jdwp=transport=dt_socket,address=*:5010,server=y,suspend=n"
+    logging:
+      driver: "json-file"
+    ports:
+      - 5010:5010
