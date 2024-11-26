@@ -3,6 +3,7 @@ package org.lmcdasi.demo.srtp.jni.srtp;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.lmcdasi.demo.srtp.common.SrtpErrStatus;
+import org.lmcdasi.demo.srtp.common.SrtpLogLevelT;
 import org.lmcdasi.demo.srtp.condition.UseJniCondition;
 import org.lmcdasi.demo.srtp.jna.srtp.LogCallbackImplementation;
 import org.slf4j.Logger;
@@ -23,8 +24,8 @@ public class SrtpComponent {
 
     private static native int srtpInit();
     private static native int srtpShutdown();
-    //private static native int srtp_install_log_handler(LogCallbackImplementation logCallback, Object userData);
-    //private static native int srtp_set_debug_module(String moduleName, int level);
+    private static native int srtpInstallLogHandler(LogCallbackImplementation logCallback, Object userData);
+    private static native int srtpSetDebugModule(String moduleName, int level);
 
     @PostConstruct
     void init() {
@@ -41,16 +42,15 @@ public class SrtpComponent {
         LOGGER.info("srtp_init status {}.", Arrays.stream(SrtpErrStatus.values()).
                         filter(e -> e.getValue() == status).findFirst().get());
 
-        /**
+
         final var logCallbackImpl = new LogCallbackImplementation();
-
-        final var statusLogHandler = srtp_install_log_handler(logCallbackImpl, null);
+        final var statusLogHandler = srtpInstallLogHandler(logCallbackImpl, null);
         if (SRTP_ERR_STATUS_OK.getValue() == statusLogHandler) {
-            final var statusDebug = srtp_set_debug_module("srtp", 1);
-
-            LOGGER.info("Activate log handler and srtp debug module");
+            final var statusDebug = srtpSetDebugModule("srtp", 1);
+            if(SRTP_ERR_STATUS_OK.getValue() == statusDebug) {
+                LOGGER.info("Log handler and srtp debug module activated.");
+            }
         }
-        */
     }
 
     @PreDestroy

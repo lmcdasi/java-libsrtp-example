@@ -17,5 +17,6 @@ g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -I"/usr/include/srtp2" -
 
 g++ -shared -o libsrtpjni.so SrtpComponent.o SrtpContext.o SrtpSession.o -lsrtp2
 
+mkdir -p ../src/main/resources/native
 cp libsrtpjni.so ../src/main/resources/native/libsrtpjni.so
 
