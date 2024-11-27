@@ -2,13 +2,13 @@ package org.lmcdasi.demo.srtp.jni.srtp;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.lmcdasi.demo.srtp.ApplicationProperties;
 import org.lmcdasi.demo.srtp.common.SrtpErrStatus;
-import org.lmcdasi.demo.srtp.common.SrtpLogLevelT;
 import org.lmcdasi.demo.srtp.condition.UseJniCondition;
-import org.lmcdasi.demo.srtp.jna.srtp.LogCallbackImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +27,14 @@ public class SrtpComponent {
     private static native int srtpInstallLogHandler(LogCallbackImplementation logCallback, Object userData);
     private static native int srtpSetDebugModule(String moduleName, int level);
 
+    private ApplicationProperties applicationProperties;
+    private LogCallbackImplementation logCallbackImpl;
+
+    @Autowired
+    public void setApplicationProperties(final ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
     @PostConstruct
     void init() {
         try {
@@ -42,13 +50,14 @@ public class SrtpComponent {
         LOGGER.info("srtp_init status {}.", Arrays.stream(SrtpErrStatus.values()).
                         filter(e -> e.getValue() == status).findFirst().get());
 
-
-        final var logCallbackImpl = new LogCallbackImplementation();
-        final var statusLogHandler = srtpInstallLogHandler(logCallbackImpl, null);
-        if (SRTP_ERR_STATUS_OK.getValue() == statusLogHandler) {
-            final var statusDebug = srtpSetDebugModule("srtp", 1);
-            if(SRTP_ERR_STATUS_OK.getValue() == statusDebug) {
-                LOGGER.info("Log handler and srtp debug module activated.");
+        if (applicationProperties.isDebugSrtp()) {
+            logCallbackImpl = new LogCallbackImplementation();
+            final var statusLogHandler = srtpInstallLogHandler(logCallbackImpl, null);
+            if (SRTP_ERR_STATUS_OK.getValue() == statusLogHandler) {
+                final var statusDebug = srtpSetDebugModule("srtp", 1);
+                if (SRTP_ERR_STATUS_OK.getValue() == statusDebug) {
+                    LOGGER.info("Log handler and srtp debug module activated.");
+                }
             }
         }
     }

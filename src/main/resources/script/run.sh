@@ -23,4 +23,4 @@ echo "Run recording"
 curl "http://localhost:8080/StartRecording?udpPort=${encoded_dst_port}&cipher=${encoded_cipher}"
 
 echo "Starting srtp sender"
-gst-launch-1.0.exe -v filesrc location="./playMono.wav" ! wavparse ! mulawdec ! mulawenc ! rtppcmupay ! "application/x-rtp, payload=(int)0, ssrc=(uint)6694999238" ! srtpenc key=${ENCODED_CIPHER} rtp-cipher=aes-128-icm rtp-auth=hmac-sha1-80 ! udpsinkhost=${DST_HOST} port=${DST_PORT}
+gst-launch-1.0.exe -v filesrc location="./playMono.wav" ! wavparse ! mulawdec ! mulawenc ! rtppcmupay mtu=172 ! "application/x-rtp, payload=(int)0, ssrc=(uint)6694999238" ! srtpenc key=${ENCODED_CIPHER} rtp-cipher=aes-128-icm rtp-auth=hmac-sha1-80 ! udpsinkhost=${DST_HOST} port=${DST_PORT}

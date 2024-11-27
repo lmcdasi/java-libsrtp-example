@@ -7,7 +7,7 @@ static jobject globalLogCallback = nullptr;
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     javaVM = vm;
 
-    return JNI_VERSION_1_8;
+    return JNI_VERSION_21;
 }
 
 void nativeLogHandler(srtp_log_level_t level, const char* message, void* userData) {
@@ -16,10 +16,11 @@ void nativeLogHandler(srtp_log_level_t level, const char* message, void* userDat
         return;
     }
 
-    const jclass logClass = env->GetObjectClass(globalLogCallback);
-    const jmethodID logMethod = env->GetMethodID(logClass, "callback", "(Lorg/lmcdasi/demo/srtp/jni/srtp/SrtpLogLevelT;Ljava/lang/String;Ljava/nio/ByteBuffer;)V");
+    const jclass logCallback = env->GetObjectClass(globalLogCallback);
+    const jmethodID logMethod = env->GetMethodID(logCallback, "callback", "(ILjava/lang/String;Ljava/nio/ByteBuffer;)V");
 
     if (logMethod == nullptr) {
+        std::cout << "logMethod: " << logMethod << std::endl;
         javaVM->DetachCurrentThread();
         return; // Method not found
     }
@@ -36,8 +37,8 @@ void nativeLogHandler(srtp_log_level_t level, const char* message, void* userDat
 }
 
 jobject convertToJavaLogLevel(JNIEnv* env, srtp_log_level_t level) {
-    const jclass logLevelClass = env->FindClass("org/lmcdasi/demo/srtp/jni/srtp/SrtpLogLevelT");
-    jmethodID valueOfMethod = env->GetStaticMethodID(logLevelClass, "valueOf", "(I)Lorg/lmcdasi/demo/srtp/jni/srtp/SrtpLogLevelT;");
+    const jclass logLevelClass = env->FindClass("org/lmcdasi/demo/srtp/common/SrtpLogLevelT");
+    jmethodID valueOfMethod = env->GetStaticMethodID(logLevelClass, "valueOf", "(I)Lorg/lmcdasi/demo/srtp/common/SrtpLogLevelT;");
     return env->CallStaticObjectMethod(logLevelClass, valueOfMethod, level);
 }
 
