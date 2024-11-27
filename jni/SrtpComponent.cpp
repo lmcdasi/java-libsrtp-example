@@ -7,7 +7,7 @@ static jobject globalLogCallback = nullptr;
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     javaVM = vm;
 
-    return JNI_VERSION_21;
+    return JNI_VERSION_1_8;
 }
 
 void nativeLogHandler(srtp_log_level_t level, const char* message, void* userData) {
